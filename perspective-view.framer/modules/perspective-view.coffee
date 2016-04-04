@@ -18,6 +18,7 @@ class exports.PerspectiveLayer extends Layer
 
 		this.on Events.PanStart, -> initialRotation = this.rotationZ
 		this.on Events.Pan, (event) -> this.rotationZ = initialRotation - ((event.touchCenterX - event.startX) / 4)
+		this.on Events.PanEnd, -> this.rotationZ = this.rotationZ % 360
 
 	togglePerspective: (verticalSeparation = 40, temporalOpacity = 0.8) ->
 
