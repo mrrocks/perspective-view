@@ -62,7 +62,6 @@ class exports.PerspectiveLayer extends Layer
 					layer.parent = null for layer in this.children
 
 	_setAllLayersAsChildrenOf = (parent) ->
-
 		for layer in Framer.CurrentContext.getLayers() when layer.parent is null and layer isnt parent
 			parent.addSubLayer(layer)
 
