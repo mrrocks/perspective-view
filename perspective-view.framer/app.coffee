@@ -1,7 +1,7 @@
 # Perspective module
-{Perspective} = require "perspective-view"
+{PerspectiveView} = require "perspective-view"
 
-p = new Perspective
+perspectiveView = new PerspectiveView
 
 # Some random layers
 
@@ -19,5 +19,5 @@ for i in [1..16]
 	layer.center()
 	
 layers[16].on Events.Tap, ->
-	p.togglePerspective()
+	perspectiveView.togglePerspective()
 	

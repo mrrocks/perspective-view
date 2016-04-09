@@ -1,4 +1,4 @@
-class exports.Perspective 
+class exports.PerspectiveView 
 	animationCurve = "spring(120, 20, 0, 0.07)"
 	activated = false
 	rotateObject = null
