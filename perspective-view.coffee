@@ -25,9 +25,9 @@ class exports.PerspectiveLayer extends Layer
 		if not activated and not _childrenAnimating(this.children)
 				activated = true
 
-				# _setAllLayersAsChildrenOf(this)
+				_setAllLayersAsChildrenOf(this)
 
-				Framer.Device.phone.animate
+				this.animate
 					properties:
 						rotationZ: 45
 						rotationX: 45
@@ -49,8 +49,20 @@ class exports.PerspectiveLayer extends Layer
 			else if activated and not _childrenAnimating(this.children)
 				activated = false
 
+				rotationNegative = this.rotationZ < 0
+
+				if Math.abs(this.rotationZ) > 180
+					this.originalProps.rotationZ = if rotationNegative then -360 else 360
+				else
+					this.originalProps.rotationZ = if rotationNegative then -0 else 0
+
 				this.animate
-					properties: this.originalProps
+					properties:
+						rotationZ: this.originalProps.rotationZ
+						rotationX: this.originalProps.rotationX
+						scaleY: this.originalProps.scaleY
+						y: this.originalProps.y
+						backgroundColor: this.originalProps.backgroundColor
 					curve: animationCurve
 
 				for layer in this.children
@@ -59,6 +71,7 @@ class exports.PerspectiveLayer extends Layer
 						curve: animationCurve
 
 				this.once Events.AnimationEnd, ->
+					this.rotationZ = 0
 					layer.parent = null for layer in this.children
 
 	_setAllLayersAsChildrenOf = (parent) ->
