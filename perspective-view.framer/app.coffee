@@ -1,5 +1,4 @@
 # Perspective module
-
 {Perspective} = require "perspective-view"
 
 p = new Perspective
