@@ -1,8 +1,8 @@
 # Perspective module
 
-{PerspectiveLayer} = require "perspective-view"
+{Perspective} = require "perspective-view"
 
-myPerspective = new PerspectiveLayer
+p = new Perspective
 
 # Some random layers
 
@@ -18,9 +18,7 @@ for i in [1..16]
 
 	layer.html = layer.name = "Layer: #{layer.index}"
 	layer.center()
-
-# Toggle Perspective
-
+	
 layers[16].on Events.Tap, ->
-	myPerspective.togglePerspective()
+	p.togglePerspective()
 	
