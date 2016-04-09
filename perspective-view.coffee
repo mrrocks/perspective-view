@@ -25,9 +25,9 @@ class exports.PerspectiveLayer extends Layer
 		if not activated and not _childrenAnimating(this.children)
 				activated = true
 
-				_setAllLayersAsChildrenOf(this)
+				# _setAllLayersAsChildrenOf(this)
 
-				this.animate
+				Framer.Device.phone.animate
 					properties:
 						rotationZ: 45
 						rotationX: 45
