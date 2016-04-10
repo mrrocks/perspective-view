@@ -1,4 +1,4 @@
-class exports.PerspectiveLayer extends Layer
+class exports.PerspectiveView extends Layer
 	Screen.perspective = 0
 	animationCurve = "spring(120, 20, 0, 0.07)"
 	activated = false
@@ -14,11 +14,21 @@ class exports.PerspectiveLayer extends Layer
 
 		this.originalProps = this.props
 
-		# Events
+	_setAllLayersAsChildrenOf = (parent) ->
+		for layer in Framer.CurrentContext.getLayers() when layer.parent is null and layer isnt parent
+			parent.addSubLayer(layer)
 
-		this.on Events.PanStart, -> initialRotation = this.rotationZ
-		this.on Events.Pan, (event) -> this.rotationZ = initialRotation - ((event.touchCenterX - event.startX) / 4)
-		this.on Events.PanEnd, -> this.rotationZ = this.rotationZ % 360
+	_childrenAnimating = (layersArray) ->
+		_.some layersArray, (layer) -> layer.isAnimating
+
+	_panStart = ->
+		initialRotation = this.rotationZ
+
+	_pan = (event) ->
+		this.rotationZ = initialRotation - ((event.touchCenterX - event.startX) / 4)
+
+	_panEnd = ->
+		this.rotationZ = this.rotationZ % 360
 
 	togglePerspective: (verticalSeparation = 40, temporalOpacity = 0.8) ->
 
@@ -26,6 +36,14 @@ class exports.PerspectiveLayer extends Layer
 				activated = true
 
 				_setAllLayersAsChildrenOf(this)
+
+				# Events
+
+				this.on Events.PanStart, _panStart
+				this.on Events.Pan, _pan
+				this.on Events.PanEnd, _panEnd
+
+				# Animations
 
 				this.animate
 					properties:
@@ -49,9 +67,17 @@ class exports.PerspectiveLayer extends Layer
 			else if activated and not _childrenAnimating(this.children)
 				activated = false
 
+				# Events
+
+				this.off Events.PanStart, _panStart
+				this.off Events.Pan, _pan
+				this.off Events.PanEnd, _panEnd
+
+				# Animations
+
 				rotationNegative = this.rotationZ < 0
 
-				if Math.abs(this.rotationZ) > 180
+				if Math.abs(this.rotationZ % 360) > 180
 					this.originalProps.rotationZ = if rotationNegative then -360 else 360
 				else
 					this.originalProps.rotationZ = if rotationNegative then -0 else 0
@@ -73,10 +99,3 @@ class exports.PerspectiveLayer extends Layer
 				this.once Events.AnimationEnd, ->
 					this.rotationZ = 0
 					layer.parent = null for layer in this.children
-
-	_setAllLayersAsChildrenOf = (parent) ->
-		for layer in Framer.CurrentContext.getLayers() when layer.parent is null and layer isnt parent
-			parent.addSubLayer(layer)
-
-	_childrenAnimating = (layersArray) ->
-		_.some layersArray, (layer) -> layer.isAnimating
