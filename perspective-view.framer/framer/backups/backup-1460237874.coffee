@@ -23,3 +23,4 @@ for i in [1..16]
 
 layers[16].on Events.Tap, ->
 	myPerspective.togglePerspective()
+	
