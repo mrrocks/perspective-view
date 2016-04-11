@@ -9,7 +9,7 @@ class exports.PerspectiveView
 	rotationParent.orgProps = rotationParent.props
 
 	_setAllLayersAsChildrenOf = (parent) ->
-		for layer in Framer.CurrentContext.getLayers() when layer.parent is null
+		for layer in Framer.CurrentContext.getLayers() when layer.parent is null and rotationParent.children.indexOf(layer) isnt 0
 			rotationParent.addChild(layer)
 
 			layer.x = layer.x + Framer.Device.screen.x
@@ -51,7 +51,7 @@ class exports.PerspectiveView
 					y: verticalSeparation * (rotationParent.children.length / 3.5)
 				curve: animationCurve
 
-			for layer in rotationParent.children
+			for layer in rotationParent.children when layer isnt Framer.Device.screen
 				layer.orgProps = layer.props
 
 				layer.animate

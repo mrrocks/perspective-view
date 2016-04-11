@@ -3,16 +3,17 @@
   "updateDelay" : 0.3,
   "delay" : 0.3,
   "contentScale" : 1,
+  "fullScreen" : false,
   "sharedPrototype" : 1,
   "propertyPanelToggleStates" : {
 
   },
-  "deviceType" : "fullscreen",
+  "deviceType" : "apple-iphone-6s-silver",
   "deviceOrientation" : 0,
   "selectedHand" : "",
   "codeFolds" : [
 
   ],
   "device" : "iPhone 5S Space Gray",
-  "deviceScale" : 1
+  "deviceScale" : 0.5
 }
