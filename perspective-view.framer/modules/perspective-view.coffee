@@ -1,101 +1,101 @@
-class exports.PerspectiveView extends Layer
-	Screen.perspective = 0
+class exports.PerspectiveView
 	animationCurve = "spring(120, 20, 0, 0.07)"
 	activated = false
 	initialRotation = null
 
-	constructor: ->
-		super
-			width: Screen.width
-			height: Screen.height
-			clip: false
-			backgroundColor: null
-			index: 0
+	Screen.perspective = 0
 
-		this.originalProps = this.props
+	rotationParent = Framer.Device.phone
+	rotationParent.orgProps = rotationParent.props
 
 	_setAllLayersAsChildrenOf = (parent) ->
-		for layer in Framer.CurrentContext.getLayers() when layer.parent is null and layer isnt parent
-			parent.addSubLayer(layer)
+		for layer in Framer.CurrentContext.getLayers() when layer.parent is null
+			rotationParent.addChild(layer)
+
+			layer.x = layer.x + Framer.Device.screen.x
+			layer.y = layer.y + Framer.Device.screen.y
 
 	_childrenAnimating = (layersArray) ->
 		_.some layersArray, (layer) -> layer.isAnimating
 
 	_panStart = ->
-		initialRotation = this.rotationZ
+		initialRotation = rotationParent.rotationZ
 
 	_pan = (event) ->
-		this.rotationZ = initialRotation - ((event.touchCenterX - event.startX) / 4)
+		rotationParent.rotationZ = initialRotation - ((event.touchCenterX - event.startX) / 4)
 
 	_panEnd = ->
-		this.rotationZ = this.rotationZ % 360
+		rotationParent.rotationZ = rotationParent.rotationZ % 360
 
-	togglePerspective: (verticalSeparation = 40, temporalOpacity = 0.8) ->
+	toggle: (rotation = true, verticalSeparation = 40, temporalOpacity = 0.8) ->
 
-		if not activated and not _childrenAnimating(this.children)
+		if not activated and not _childrenAnimating(rotationParent.children)
 			activated = true
 
-			_setAllLayersAsChildrenOf(this)
+			_setAllLayersAsChildrenOf(rotationParent)
 
 			# Events
 
-			this.on Events.PanStart, _panStart
-			this.on Events.Pan, _pan
-			this.on Events.PanEnd, _panEnd
+			if rotation
+				rotationParent.on Events.PanStart, _panStart
+				rotationParent.on Events.Pan, _pan
+				rotationParent.on Events.PanEnd, _panEnd
 
 			# Animations
 
-			this.animate
+			rotationParent.animate
 				properties:
 					rotationZ: 45
 					rotationX: 45
 					scaleY: 0.86062
-					backgroundColor: "rgba(128, 128, 128, 0.2)"
-					y: verticalSeparation * (this.children.length / 3.4)
+					y: verticalSeparation * (rotationParent.children.length / 3.5)
 				curve: animationCurve
 
-			for layer in this.children
-				layer.originalProps = layer.props
+			for layer in rotationParent.children
+				layer.orgProps = layer.props
 
 				layer.animate
 					properties:
-						z: verticalSeparation * (layer.index - 1)
+						z: verticalSeparation * (layer.index - 2)
 						opacity: temporalOpacity
-					delay: (this.children.length - layer.index) / this.children.length
+					delay: (rotationParent.children.length - layer.index) / rotationParent.children.length
 					curve: animationCurve
 
-		else if activated and not _childrenAnimating(this.children)
+		else if activated and not _childrenAnimating(rotationParent.children)
 			activated = false
 
 			# Events
-
-			this.off Events.PanStart, _panStart
-			this.off Events.Pan, _pan
-			this.off Events.PanEnd, _panEnd
+			if rotation
+				rotationParent.off Events.PanStart, _panStart
+				rotationParent.off Events.Pan, _pan
+				rotationParent.off Events.PanEnd, _panEnd
 
 			# Animations
 
-			rotationNegative = this.rotationZ < 0
+			rotationNegative = rotationParent.rotationZ < 0
 
-			if Math.abs(this.rotationZ % 360) > 180
-				this.originalProps.rotationZ = if rotationNegative then -360 else 360
+			if Math.abs(rotationParent.rotationZ % 360) > 180
+				rotationParent.orgProps.rotationZ = if rotationNegative then -360 else 360
 			else
-				this.originalProps.rotationZ = if rotationNegative then -0 else 0
+				rotationParent.orgProps.rotationZ = if rotationNegative then -0 else 0
 
-			this.animate
+			rotationParent.animate
 				properties:
-					rotationZ: this.originalProps.rotationZ
-					rotationX: this.originalProps.rotationX
-					scaleY: this.originalProps.scaleY
-					y: this.originalProps.y
-					backgroundColor: this.originalProps.backgroundColor
+					rotationZ: rotationParent.orgProps.rotationZ
+					rotationX: rotationParent.orgProps.rotationX
+					scaleY: rotationParent.orgProps.scaleY
+					y: rotationParent.orgProps.y
 				curve: animationCurve
 
-			for layer in this.children
+			for layer in rotationParent.children
 				layer.animate
-					properties: layer.originalProps
+					properties: layer.orgProps
 					curve: animationCurve
 
-			this.once Events.AnimationEnd, ->
-				this.rotationZ = 0
-				layer.parent = null for layer in this.children
+			rotationParent.once Events.AnimationEnd, ->
+				rotationParent.rotationZ = 0
+				for layer in rotationParent.children when rotationParent.children.indexOf(layer) isnt 0
+					layer.parent = null
+
+					layer.x = layer.x - Framer.Device.screen.x
+					layer.y = layer.y - Framer.Device.screen.y

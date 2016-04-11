@@ -18,8 +18,8 @@ for i in [1..16]
 
 	layer.html = layer.name = "Layer: #{layer.index}"
 	layer.center()
-
+	
 # Toggle Perspective
 
 layers[16].on Events.Tap, ->
-	perspectiveView.togglePerspective()
+	perspectiveView.toggle()

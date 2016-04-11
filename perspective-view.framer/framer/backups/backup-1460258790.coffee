@@ -1,8 +1,8 @@
 # Perspective module
 
-{PerspectiveLayer} = require "perspective-view"
+{PerspectiveView} = require "perspective-view"
 
-myPerspective = new PerspectiveLayer
+perspectiveView = new PerspectiveView
 
 # Some random layers
 
@@ -22,4 +22,6 @@ for i in [1..16]
 # Toggle Perspective
 
 layers[16].on Events.Tap, ->
-	myPerspective.togglePerspective()
+	perspectiveView.togglePerspective()
+	for layer in layers
+		print layer.name, layer.index
