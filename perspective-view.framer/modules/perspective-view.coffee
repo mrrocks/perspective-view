@@ -2,6 +2,7 @@ class exports.PerspectiveView
 	animationCurve = "spring(120, 20, 0, 0.07)"
 	activated = false
 	initialRotation = null
+	panningRatio = 4
 
 	Screen.perspective = 0
 
@@ -15,19 +16,31 @@ class exports.PerspectiveView
 			layer.x = layer.x + Framer.Device.screen.x
 			layer.y = layer.y + Framer.Device.screen.y
 
+			layer.initialZ = null
+
 	_childrenAnimating = (layersArray) ->
 		_.some layersArray, (layer) -> layer.isAnimating
 
 	_panStart = ->
 		initialRotation = rotationParent.rotationZ
 
+		layer.initialZ = layer.z for layer in rotationParent.children when layer isnt Framer.Device.screen
+
 	_pan = (event) ->
-		rotationParent.rotationZ = initialRotation - ((event.touchCenterX - event.startX) / 4)
+		rotationParent.rotationZ = initialRotation - ((event.touchCenterX - event.startX) / panningRatio)
+
+		for layer, i in rotationParent.children when _.last(rotationParent.children).z isnt 1
+					layer.z = layer.initialZ - (((event.touchCenterY - event.startY) * (i - 1)) / panningRatio)
 
 	_panEnd = ->
 		rotationParent.rotationZ = rotationParent.rotationZ % 360
 
-	toggle: (rotation = true, verticalSeparation = 40, temporalOpacity = 0.8) ->
+	_keyDownTextField = (e) =>
+		if e.keyCode is 13
+			print this
+			this.toggle()
+
+	toggle: (rotation = true, z = 40, opacity = 0.8) ->
 
 		if not activated and not _childrenAnimating(rotationParent.children)
 			activated = true
@@ -48,7 +61,7 @@ class exports.PerspectiveView
 					rotationZ: 45
 					rotationX: 45
 					scaleY: 0.86062
-					y: verticalSeparation * (rotationParent.children.length / 3.5)
+					y: z * (rotationParent.children.length / 3.5)
 				curve: animationCurve
 
 			for layer in rotationParent.children when layer isnt Framer.Device.screen
@@ -56,8 +69,8 @@ class exports.PerspectiveView
 
 				layer.animate
 					properties:
-						z: verticalSeparation * (layer.index - 2)
-						opacity: temporalOpacity
+						z: z * (layer.index - 2)
+						opacity: opacity
 					delay: (rotationParent.children.length - layer.index) / rotationParent.children.length
 					curve: animationCurve
 

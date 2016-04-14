@@ -1,10 +1,11 @@
 # Perspective module
 
 {PerspectiveView} = require "perspective-view"
-
 perspectiveView = new PerspectiveView
 
 # Some random layers
+
+Screen.backgroundColor = "F2F2F2"
 
 layers = []
 
@@ -22,4 +23,7 @@ for i in [1..16]
 # Toggle Perspective
 
 layers[16].on Events.Tap, ->
+	
 	perspectiveView.toggle()
+	
+	# .toggle(rotation = true, z = 40, opacity = 0.8)

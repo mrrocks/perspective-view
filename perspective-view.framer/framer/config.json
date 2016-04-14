@@ -6,7 +6,7 @@
   "fullScreen" : false,
   "sharedPrototype" : 1,
   "propertyPanelToggleStates" : {
-
+    "Filters" : false
   },
   "deviceType" : "apple-iphone-6s-silver",
   "deviceOrientation" : 0,
